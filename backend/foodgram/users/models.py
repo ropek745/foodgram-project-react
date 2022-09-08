@@ -1,9 +1,18 @@
 from django.db import models
 from django.core.validators import RegexValidator
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
+
+
+class CustomUserManager(UserManager):
+    def create_user(self, *args, **kwargs):
+        print("DEBUG!")
+        print("Args:", args)
+        print("Kwargs:", kwargs)
+        return super().create_user(*args, **kwargs)
 
 
 class User(AbstractUser):
+    objects = CustomUserManager()
     username = models.CharField(
         'Никнейм пользователя',
         db_index=True,
@@ -43,3 +52,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    EMAIL_FIELD = 'email'
