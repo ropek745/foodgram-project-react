@@ -3,18 +3,9 @@ from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractUser, UserManager
 
 
-class CustomUserManager(UserManager):
-    def create_user(self, *args, **kwargs):
-        print("DEBUG!")
-        print("Args:", args)
-        print("Kwargs:", kwargs)
-        return super().create_user(*args, **kwargs)
-
-
 class User(AbstractUser):
-    objects = CustomUserManager()
     username = models.CharField(
-        'Никнейм пользователя',
+        verbose_name='Никнейм пользователя',
         db_index=True,
         unique=True,
         max_length=150,
@@ -26,21 +17,17 @@ class User(AbstractUser):
         ]
     )
     email = models.EmailField(
-        'Электронная почта',
+        verbose_name='Электронная почта',
         unique=True,
         max_length=254
     )
     first_name = models.CharField(
-        'Имя пользователя',
+        verbose_name='Имя пользователя',
         max_length=50,
-        blank=True,
-        null=True
     )
     last_name = models.CharField(
-        'Фамилия пользователя',
+        verbose_name='Фамилия пользователя',
         max_length=50,
-        blank=True,
-        null=True
     )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -56,3 +43,32 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     EMAIL_FIELD = 'email'
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        verbose_name='Пользователь',
+        on_delete=models.CASCADE,
+        related_name='follower'
+    )
+    author = models.ForeignKey(
+        User,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='following'
+    )
+
+    def __str__(self):
+        return f'{self.user} подписан на {self.author}'
+
+    class Meta:
+        verbose_name = 'Подписчик'
+        verbose_name_plural = 'Подписчики'
+
+        constraints = (
+            models.UniqueConstraint(
+                fields=('user', 'author'),
+                name='follow_user_author_constraint'
+            ),
+        )
