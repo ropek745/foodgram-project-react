@@ -10,11 +10,13 @@ from .models import (
 )
 
 
+@admin.register(AmountIngredient)
 class RecipeIngredientsAdmin(admin.StackedInline):
     model = AmountIngredient
     autocomplete_fields = ('ingredients',)
 
 
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'name', 'text', 'cooking_time', 'pub_date', 'get_favorite_count'
@@ -25,27 +27,29 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     list_filter = ('pub_date', 'tags',)
 
+    @admin.display(description='В избранном')
+    def get_favorite_count(self, obj):
+        return obj.favorite.count()
 
+
+@admin.register(Favorite)
 class FavoritesAdmin(admin.ModelAdmin):
     list_display = ('id', 'user',)
 
 
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'measurement_unit',)
     search_fields = ('name',)
 
 
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'color', 'slug',)
     search_fields = ('name', 'slug',)
 
 
+@admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('id', 'user')
 
-
-admin.site.register(Recipe)
-admin.site.register(ShoppingCart)
-admin.site.register(Tag)
-admin.site.register(Ingredient)
-admin.site.register(Favorite)

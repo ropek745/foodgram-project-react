@@ -1,14 +1,16 @@
 import os
 from pathlib import Path
 
-from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-8hr*rrs(8!*=6p*pkode=h@2bme3e&@=8plw%9y#%49&9$2tju'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['host.docker.internal', '127.0.0.1']
 
@@ -127,8 +129,8 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
-    "SEND_ACTIVATION_EMAIL": False,
-    "HIDE_USERS": False,
+    'SEND_ACTIVATION_EMAIL': False,
+    'HIDE_USERS': False,
     'SERIALIZERS': {
         'user_create': 'api.serializers.CreateUserSerializer',
         "current_user": "api.serializers.UserListSerializer",
@@ -140,6 +142,8 @@ DJOSER = {
         "token_create": ["rest_framework.permissions.AllowAny"],
     },
 }
+
+FILE_NAME = 'shopping_list.txt'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

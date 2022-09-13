@@ -5,6 +5,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from food.models import Ingredient, Tag, AmountIngredient, Recipe
+from rest_framework.validators import UniqueTogetherValidator
 from users.models import User
 
 
@@ -130,6 +131,9 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             'id', 'ingredients', 'tags', 'image', 'name', 'text',
             'cooking_time', 'author',
         )
+        validators = [UniqueTogetherValidator(
+            queryset=Recipe.objects.all(),
+            fields=['author', 'recipe'])]
 
     def validate(self, data):
         ingredients_set = set()
@@ -216,6 +220,9 @@ class SubscribeSerializer(serializers.ModelSerializer):
             'recipes',
             'recipes_count'
         )
+        validators = [UniqueTogetherValidator(
+            queryset=User.objects.all(),
+            fields=['username', 'id'])]
 
     def get_is_subscribed(self, obj):
         return obj.following.filter(user=obj.user, author=obj.author).exists()

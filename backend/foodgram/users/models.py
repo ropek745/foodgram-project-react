@@ -59,9 +59,6 @@ class Follow(models.Model):
         related_name='following'
     )
 
-    def __str__(self):
-        return f'{self.user} подписан на {self.author}'
-
     class Meta:
         verbose_name = 'Подписчик'
         verbose_name_plural = 'Подписчики'
@@ -72,3 +69,6 @@ class Follow(models.Model):
                 name='follow_user_author_constraint'
             ),
         )
+
+    def __str__(self):
+        return f'{self.user} подписан на {self.author}'

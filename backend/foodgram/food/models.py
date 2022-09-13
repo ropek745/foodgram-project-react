@@ -6,7 +6,7 @@ from users.models import User
 class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название',
-        max_length=200
+        max_length=20
     )
     color = models.CharField(
         verbose_name='Цвет в HEX',
@@ -16,7 +16,7 @@ class Tag(models.Model):
     slug = models.SlugField(
         verbose_name='Уникальный слаг',
         unique=True,
-        max_length=200
+        max_length=20
     )
 
     class Meta:
@@ -34,7 +34,7 @@ class Ingredient(models.Model):
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
-        max_length=200,
+        max_length=20,
     )
 
     class Meta:
@@ -46,7 +46,7 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    tags = models.ManyToManyField(  # Не забыть проработать!!!
+    tags = models.ManyToManyField(
         Tag,
         verbose_name='Теги'
     )
@@ -56,7 +56,7 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Автор'
     )
-    ingredients = models.ManyToManyField(  # Не забыть проработать!!!
+    ingredients = models.ManyToManyField(
         Ingredient,
         verbose_name='Ингредиенты',
     )
@@ -123,19 +123,28 @@ class AmountIngredient(models.Model):
         verbose_name='Рецепт',
         related_name='amount_ingredient'
     )
-    ingredients = models.ForeignKey(
+    ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
         related_name='amount_ingredient'
     )
     amount = models.PositiveIntegerField(
-        verbose_name='Колличество ингредиентов'
+        verbose_name='Количество ингредиентов'
     )
 
     class Meta:
-        verbose_name = 'Ингридиент'
-        verbose_name_plural = 'Количество ингридиентов'
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Количество ингредиентов'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('ingredient', 'recipe',),
+                name='recipe_ingredient_constraint'
+            )
+        ]
+
+    def __str__(self):
+        return f'В {self.recipe} {self.amount} {self.ingredient}'
 
 
 class ShoppingCart(models.Model):
@@ -155,3 +164,14 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Покупка'
         verbose_name_plural = 'Покупки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    'user',
+                    'recipe',
+                ],
+                name='unique_shopping_cart')
+        ]
+
+    def __str__(self):
+        return f'Список покупок пользователя {self.user.username}.'
