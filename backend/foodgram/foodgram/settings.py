@@ -10,8 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = False
-
+DEBUG = os.getenv('DEBUG', default=True)
 ALLOWED_HOSTS = ['host.docker.internal', '127.0.0.1']
 
 
@@ -64,19 +63,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -92,10 +84,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -133,17 +121,17 @@ DJOSER = {
     'HIDE_USERS': False,
     'SERIALIZERS': {
         'user_create': 'api.serializers.CreateUserSerializer',
-        "current_user": "api.serializers.UserListSerializer",
-        "user": "api.serializers.UserListSerializer",
+        'current_user': 'api.serializers.UserListSerializer',
+        'user': 'api.serializers.UserListSerializer',
     },
     'PERMISSIONS': {
         'user': ('rest_framework.permissions.IsAuthenticatedOrReadOnly',),
         'user_list': ('rest_framework.permissions.AllowAny',),
-        "token_create": ["rest_framework.permissions.AllowAny"],
+        'token_create': ['rest_framework.permissions.AllowAny'],
     },
 }
 
-FILE_NAME = 'shopping_list.txt'
+SHOPPING_CART_FILENAME = 'shopping_list.txt'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
