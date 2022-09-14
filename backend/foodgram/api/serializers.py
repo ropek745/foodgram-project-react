@@ -4,7 +4,8 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from food.models import Ingredient, Tag, AmountIngredient, Recipe
+from foods.models import Ingredient, Tag, AmountIngredient, Recipe
+from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from users.models import User
 
@@ -37,6 +38,8 @@ class UserListSerializer(UserSerializer):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
+        if request.user.id == obj.author.id:
+            raise ValidationError('Нельзя подписаться на себя!')
         return obj.following.filter(user=request.user).exists()
 
 
@@ -113,6 +116,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
+        if not request.user.is_in_shopping_card:
+            return ValidationError('Нет списка покупок!')
         return request.user.cart.filter(recipe=obj).exists()
 
 

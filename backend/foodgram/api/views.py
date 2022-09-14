@@ -5,13 +5,12 @@ from rest_framework import viewsets, status, filters
 from djoser.views import UserViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 
-from .service import shopping_cart
+from .service import get_ingredients_for_shopping
 from users.models import User, Follow
-from food.models import (
+from foods.models import (
     Ingredient,
     Tag,
     Recipe,
@@ -60,16 +59,13 @@ class UsersViewSet(UserViewSet):
     def subscribe(self, request, id):
         author = get_object_or_404(User, id=id)
         if request.method == 'POST':
-            if request.user.id == author.id:
-                raise ValidationError('Нельзя подписаться на себя!')
-            else:
-                serializer = SubscribeSerializer(
-                    Follow.objects.create(user=request.user, author=author),
-                    context={'request': request},
-                )
-                return Response(
-                    serializer.data, status=status.HTTP_201_CREATED
-                )
+            serializer = SubscribeSerializer(
+                Follow.objects.create(user=request.user, author=author),
+                context={'request': request},
+            )
+            return Response(
+                serializer.data, status=status.HTTP_201_CREATED
+            )
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -104,14 +100,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     @staticmethod
-    def add_recipe(model, request, pk):
+    def __add_recipe(model, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(recipe=recipe, user=request.user)
         serializer = RecipeSubcribeSerializer(recipe)
         return Response(data=serializer.data, status=HTTPStatus.CREATED)
 
     @staticmethod
-    def delete_recipe(model, request, pk):
+    def __delete_recipe(model, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.delete(recipe=recipe, user=request.user)
         serializer = RecipeSubcribeSerializer(recipe)
@@ -144,6 +140,4 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         user = request.user
-        if not user.shopping_cart.exists():
-            return Response(status=HTTPStatus.BAD_REQUEST)
-        shopping_cart(user)
+        return get_ingredients_for_shopping(user)

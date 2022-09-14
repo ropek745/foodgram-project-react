@@ -11,9 +11,9 @@ from .models import (
 
 
 @admin.register(AmountIngredient)
-class RecipeIngredientsAdmin(admin.StackedInline):
+class RecipeIngredientsAdmin(admin.ModelAdmin):
     model = AmountIngredient
-    autocomplete_fields = ('ingredients',)
+    search_fields = ['ingredients']
 
 
 @admin.register(Recipe)
@@ -52,4 +52,3 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('id', 'user')
-

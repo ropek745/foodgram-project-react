@@ -1,11 +1,11 @@
 from django.db.models import Sum
 from django.http import HttpResponse
 
-from food.models import AmountIngredient
-from foodgram.settings import SHOPPING_CART_FILENAME
+from foods.models import AmountIngredient
+from django.conf import settings
 
 
-def shopping_cart(user):
+def get_ingredients_for_shopping(user):
     ingredients = AmountIngredient.objects.filter(
         recipe__shopping_cart__user=user
     ).values(
@@ -19,7 +19,7 @@ def shopping_cart(user):
         charset='utf-8',
     )
     response['Content-Disposition'] = (
-        f'attachment; filename={SHOPPING_CART_FILENAME}'
+        f'attachment; filename={settings.SHOPPING_CART_FILENAME}'
     )
     response.write('Список продуктов к покупке:\n')
     for ingredient in ingredients:
