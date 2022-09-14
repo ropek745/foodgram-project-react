@@ -120,8 +120,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk=None):
         if request.method == 'POST':
-            return self.add_recipe(Favorite, request, pk)
-        self.delete_recipe(Favorite, request, pk)
+            return self.__add_recipe(Favorite, request, pk)
+        self.__delete_recipe(Favorite, request, pk)
 
     @action(
         detail=True,
@@ -130,8 +130,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
-            return self.add_recipe(ShoppingCart, request, pk)
-        self.delete_recipe(ShoppingCart, request, pk)
+            return self.__add_recipe(ShoppingCart, request, pk)
+        self.__delete_recipe(ShoppingCart, request, pk)
 
     @action(
         detail=False,
