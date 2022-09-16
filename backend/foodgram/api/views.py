@@ -16,7 +16,6 @@ from foods.models import (
     Recipe,
     Favorite,
     ShoppingCart,
-    AmountIngredient
 )
 from .serializers import (
     UserListSerializer,
