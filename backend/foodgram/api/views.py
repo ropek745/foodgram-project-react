@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 
-from .service import get_ingredients_for_shopping
+from .services import get_ingredients_for_shopping
 from users.models import User, Follow
 from foods.models import (
     Ingredient,
@@ -53,7 +53,7 @@ class UsersViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(
-        methods=['POST', 'DELETE'],
+        methods=['POST'],
         detail=True,
     )
     def subscribe(self, request, id):
@@ -66,6 +66,8 @@ class UsersViewSet(UserViewSet):
             return Response(
                 serializer.data, status=status.HTTP_201_CREATED
             )
+        Follow.objects.filter(user=request.user, author=author).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class TagViewSet(viewsets.ModelViewSet):
