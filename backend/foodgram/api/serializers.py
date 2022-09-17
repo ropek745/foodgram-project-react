@@ -23,6 +23,7 @@ class CreateUserSerializer(UserCreateSerializer):
 class UserListSerializer(UserSerializer):
     """Сериализатор для управления пользователями."""
     is_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (

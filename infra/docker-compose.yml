@@ -9,7 +9,11 @@ services:
       - ./.env
 
   backend:
+<<<<<<< HEAD
     image: romka745/foodgram_backend:latest
+=======
+    image: romka745/foodgram_backend
+>>>>>>> 488d9597aebc604750418942dbcbfae6bf57aa6a
     restart: always
     volumes:
       - static_value:/app/static/
@@ -20,7 +24,11 @@ services:
       - ./.env
 
   frontend:
+<<<<<<< HEAD
     image: romka745/foodgram_backend:latest
+=======
+    image: romka745/foodgram_backend
+>>>>>>> 488d9597aebc604750418942dbcbfae6bf57aa6a
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
@@ -45,4 +53,8 @@ volumes:
   db:
   result_build:
   static_value:
+<<<<<<< HEAD
   media_value:
+=======
+  media_value:
+>>>>>>> 488d9597aebc604750418942dbcbfae6bf57aa6a
