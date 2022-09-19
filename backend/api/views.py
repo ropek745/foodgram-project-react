@@ -52,7 +52,7 @@ class UsersViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(
-        methods=['POST'],
+        methods=['POST', 'DELETE'],
         detail=True,
     )
     def subscribe(self, request, id):
