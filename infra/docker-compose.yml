@@ -20,7 +20,7 @@ services:
       - ./.env
 
   frontend:
-    image: romka745/foodgram_backend
+    image: romka745/foodgram_backend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
