@@ -40,10 +40,6 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
-    EMAIL_FIELD = 'email'
-
 
 class Follow(models.Model):
     user = models.ForeignKey(
