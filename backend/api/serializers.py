@@ -36,12 +36,10 @@ class UserListSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        if request.user.is_anonymous:
-            return False
-        if request.user.id == obj.id:
-            raise ValidationError('Нельзя подписаться на себя!')
-        return obj.following.filter(user=request.user).exists()
+        user = self.context['request'].user
+        return Follow.objects.filter(
+            user=user, author=obj
+        ).exists() if user.is_authenticated else False
 
 
 class TagSerializer(serializers.ModelSerializer):
