@@ -39,7 +39,7 @@ class UserListSerializer(UserSerializer):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
-        if request.user.id == obj.author.id:
+        if request.user.id == obj.user.id:
             raise ValidationError('Нельзя подписаться на себя!')
         return obj.following.filter(user=request.user).exists()
 
