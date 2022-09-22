@@ -7,7 +7,7 @@ from rest_framework import serializers
 from foods.models import Ingredient, Tag, AmountIngredient, Recipe
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
-from users.models import User
+from users.models import User, Follow
 
 
 class CreateUserSerializer(UserCreateSerializer):
