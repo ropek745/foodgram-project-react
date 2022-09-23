@@ -205,12 +205,14 @@ class RecipeSubcribeSerializer(serializers.ModelSerializer):
 
 class SubscribeSerializer(serializers.ModelSerializer):
     """Сериализатор для подписок."""
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField(read_only=True)
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
-    recipes = RecipeSubcribeSerializer(many=True)
-    recipes_count = serializers.IntegerField(
-        source='recipes.count',
-        read_only=True
-    )
 
     class Meta:
         model = User
