@@ -32,7 +32,7 @@ class UserListSerializer(UserSerializer):
             'username',
             'first_name',
             'last_name',
-            'is_subscribed'
+            'is_subscribed',
         )
 
     def get_is_subscribed(self, obj):
@@ -224,7 +224,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
             'last_name',
             'is_subscribed',
             'recipes',
-            'recipes_count'
+            'recipes_count',
         )
         validators = [UniqueTogetherValidator(
             queryset=User.objects.all(),
