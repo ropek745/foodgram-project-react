@@ -54,7 +54,8 @@ class Recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='recipes',
-        verbose_name='Автор'
+        verbose_name='Автор',
+        null=True
     )
     ingredients = models.ManyToManyField(
         Ingredient,
