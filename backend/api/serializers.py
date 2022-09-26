@@ -3,7 +3,7 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from foods.models import Ingredient, Tag, AmountIngredient, Recipe
+from foods.models import Ingredient, Tag, AmountIngredient, Recipe, ShoppingCart
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from users.models import User, Follow
@@ -114,12 +114,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         return request.user.favorite.filter(recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        request = self.context.get('request')
-        if request.user.is_anonymous:
-            return False
-        if not request.user.is_in_shopping_card:
-            return ValidationError('Нет списка покупок!')
-        return request.user.cart.filter(recipe=obj).exists()
+        user = self.context.get('request').user
+        return ShoppingCart.objects.filter(
+            user=user, recipe=obj
+        ).exists() if user.is_authenticated else False
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
