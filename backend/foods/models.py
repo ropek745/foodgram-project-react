@@ -20,6 +20,7 @@ class Tag(models.Model):
     )
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -38,6 +39,7 @@ class Ingredient(models.Model):
     )
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
@@ -60,6 +62,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         verbose_name='Ингредиенты',
+        related_name='recipes'
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации рецепта',
@@ -82,6 +85,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
+        ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -139,13 +143,13 @@ class AmountIngredient(models.Model):
         verbose_name_plural = 'Количество ингредиентов'
         constraints = [
             models.UniqueConstraint(
-                fields=('ingredient', 'recipe',),
+                fields=('ingredients', 'recipe',),
                 name='recipe_ingredient_constraint'
             )
         ]
 
     def __str__(self):
-        return f'В {self.recipe} {self.amount} {self.ingredient}'
+        return f'В {self.recipe} {self.amount} {self.ingredients}'
 
 
 class ShoppingCart(models.Model):
@@ -175,4 +179,4 @@ class ShoppingCart(models.Model):
         ]
 
     def __str__(self):
-        return f'Список покупок пользователя {self.user.username}.'
+        return f'Список покупок пользователя {self.user}.'
