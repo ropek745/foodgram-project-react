@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
@@ -12,6 +11,7 @@ from users.models import User, Follow
 
 class CreateUserSerializer(UserCreateSerializer):
     """Сериализатор для регистрации пользователей."""
+
     class Meta:
         model = User
         fields = (
@@ -44,6 +44,7 @@ class UserListSerializer(UserSerializer):
 
 class TagSerializer(serializers.ModelSerializer):
     """Сериализатор для управления тегами"""
+
     class Meta:
         model = Tag
         fields = (
@@ -53,6 +54,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для управления ингридиентами"""
+
     class Meta:
         model = Ingredient
         fields = (
@@ -244,10 +246,10 @@ class SubscribeSerializer(serializers.ModelSerializer):
             'recipes_count',
         )
         validators = [
-           UniqueTogetherValidator(
+            UniqueTogetherValidator(
                 queryset=User.objects.all(), fields=['username', 'id']
-           )
-       ]
+            )
+        ]
 
     def get_recipes(self, obj):
         request = self.context.get('request')
