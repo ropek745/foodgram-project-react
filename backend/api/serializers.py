@@ -228,8 +228,6 @@ class RecipeSubcribeSerializer(serializers.ModelSerializer):
 
 class SubscribeSerializer(serializers.ModelSerializer):
     """Сериализатор для подписок."""
-    recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField(read_only=True)
     id = serializers.ReadOnlyField(source='author.id')
     email = serializers.ReadOnlyField(source='author.email')
     username = serializers.ReadOnlyField(source='author.username')
