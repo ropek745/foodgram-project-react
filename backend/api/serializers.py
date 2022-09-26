@@ -3,10 +3,15 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from foods.models import Ingredient, Tag, AmountIngredient, Recipe, ShoppingCart
-from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from users.models import User, Follow
+from foods.models import (
+    Ingredient,
+    Tag,
+    AmountIngredient,
+    Recipe,
+    ShoppingCart
+)
 
 
 class CreateUserSerializer(UserCreateSerializer):
