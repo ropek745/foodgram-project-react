@@ -243,10 +243,9 @@ class SubscribeSerializer(serializers.ModelSerializer):
             'recipes',
             'recipes_count',
         )
-       validators = [
+        validators = [
            UniqueTogetherValidator(
-            queryset=User.objects.all(),
-            fields=['username', 'id']
+                queryset=User.objects.all(), fields=['username', 'id']
            )
        ]
 
