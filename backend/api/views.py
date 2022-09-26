@@ -129,6 +129,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         permission_classes=(IsAuthenticated,)
     )
+    def recipe(self, request, pk):
+        if request.method == 'POST':
+            return self._add_recipe(Recipe, request, pk)
+        self._delete_recipe(Recipe, request, pk)
+
+    @action(
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=(IsAuthenticated,)
+    )
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
             return self.__add_recipe(ShoppingCart, request, pk)
