@@ -95,7 +95,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     ingredients = IngredientRecipeReadSerializer(
         many=True,
-        source='consists_of'
+        source='amount_ingredient'
     )
 
     class Meta:
