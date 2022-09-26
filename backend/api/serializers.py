@@ -121,7 +121,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания рецептов."""
     ingredients = IngredientCreateSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
@@ -132,39 +131,58 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            'id', 'ingredients', 'tags', 'image', 'name', 'text',
-            'cooking_time', 'author',
+            'id',
+            'author',
+            'ingredients',
+            'tags',
+            'image',
+            'name',
+            'text',
+            'cooking_time'
         )
-        validators = [UniqueTogetherValidator(
-            queryset=Recipe.objects.all(),
-            fields=['author', 'recipe'])]
+
+    def validate_cooking_time(self, cooking_time):
+        if cooking_time <= 0:
+            raise serializers.ValidationError(
+                'Время приготовления не может быть 0 или меньше'
+            )
+        return cooking_time
+
+    def check_ingredients(self, data):
+        validated_items = []
+        existed = []
+        for item in data:
+            ingredient = get_object_or_404(Ingredient, pk=item['id'])
+            if ingredient in validated_items:
+                existed.append(ingredient)
+            validated_items.append(ingredient)
+        if existed:
+            raise serializers.ValidationError(
+                'Этот ингредиент уже добавлен'
+            )
 
     def validate(self, data):
-        ingredients_set = set()
-        for ingredient in data['ingredients']:
-            ingredients_set.add(ingredient['id'])
-            if ingredient['amount'] < 1:
-                raise serializers.ValidationError(
-                    settings.INGREDIENTS_COUNT_ERROR
-                )
-        if len(ingredients_set) != len(data['ingredients']):
-            raise serializers.ValidationError(
-                settings.INGREDIENT_REPETITION_ERROR
-            )
+        ingredients = data.get('ingredients')
+        self.check_ingredients(ingredients)
+        data['ingredients'] = ingredients
         return data
 
-    def create_ingredients(self, recipe, ingredients):
-        ingredients_list = [
-            AmountIngredient(
-                ingredient=get_object_or_404(Ingredient, id=ingredient['id']),
+    @staticmethod
+    def create_ingredients(ingredients, recipe):
+        ingredient_list = []
+        for ingredient in ingredients:
+            amount = ingredient['amount']
+            recipe_ingredient = AmountIngredient(
+                ingredients=get_object_or_404(
+                    Ingredient, id=ingredient['id']
+                ),
                 recipe=recipe,
-                amount=ingredient['amount']
-            ) for ingredient in ingredients
-        ]
-        AmountIngredient.objects.bulk_create(ingredients_list)
+                amount=amount
+            )
+            ingredient_list.append(recipe_ingredient)
+        AmountIngredient.objects.bulk_create(ingredient_list)
 
     def create(self, validated_data):
-        """Создание рецепта."""
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
         image = validated_data.pop('image')
@@ -174,7 +192,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, recipe, validated_data):
-        """Редактирование рецепта."""
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         AmountIngredient.objects.filter(recipe=recipe).delete()
@@ -226,9 +243,23 @@ class SubscribeSerializer(serializers.ModelSerializer):
             'recipes',
             'recipes_count',
         )
-        validators = [UniqueTogetherValidator(
-            queryset=User.objects.all(),
-            fields=['username', 'id'])]
+       validators = [
+            UniqueTogetherValidator(
+                queryset=User.objects.all(), fields=['username', 'id']
+            )
+        ]
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        recipes_limit = request.GET.get('recipes_limit')
+        recipes = Recipe.objects.filter(author=obj.author)
+        if recipes_limit:
+            recipes = recipes[:int(recipes_limit)]
+        serializer = RecipeSubcribeSerializer(recipes, many=True)
+        return serializer.data
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj.author).count()
 
     def get_is_subscribed(self, obj):
-        return obj.following.filter(user=obj.user, author=obj.author).exists()
+        return Follow.objects.filter(user=obj.user, author=obj.author).exists()
