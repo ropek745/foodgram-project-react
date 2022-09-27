@@ -9,11 +9,11 @@ def get_ingredients_for_shopping(user):
     ingredients = AmountIngredient.objects.filter(
         recipe__shopping_cart__user=user
     ).values(
-        'ingredients__name',
+        'ingredient__name',
         'ingredient__measurement_unit',
     ).annotate(
         value=Sum('amount')
-    ).order_by('ingredients__name')
+    ).order_by('ingredient__name')
     response = HttpResponse(
         content_type='text/plain',
         charset='utf-8',
@@ -24,7 +24,7 @@ def get_ingredients_for_shopping(user):
     response.write('Список продуктов к покупке:\n')
     for ingredient in ingredients:
         response.write(
-            f'- {ingredient["ingredients__name"]} '
+            f'- {ingredient["ingredient__name"]} '
             f'- {ingredient["value"]} '
             f'{ingredient["ingredient__measurement_unit"]}\n'
         )
