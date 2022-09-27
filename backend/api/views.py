@@ -110,7 +110,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @staticmethod
     def __delete_recipe(model, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
-        return Response(data=serializer.data, status=HTTPStatus.NO_CONTENT)
+        model.objects.filter(recipe=recipe, user=request.user).delete()
+        return Response(status=HTTPStatus.NO_CONTENT)
 
     @action(
         detail=True,
