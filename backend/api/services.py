@@ -6,7 +6,7 @@ from django.conf import settings
 
 
 def get_ingredients_for_shopping(user):
-    ingredients = AmountIngredient.objects.filter(
+    ingredient = AmountIngredient.objects.filter(
         recipe__shopping_cart__user=user
     ).values(
         'ingredients__name',
