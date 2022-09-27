@@ -6,11 +6,11 @@ from django.conf import settings
 
 
 def get_ingredients_for_shopping(user):
-    ingredient = AmountIngredient.objects.filter(
+    ingredients = AmountIngredient.objects.filter(
         recipe__shopping_cart__user=user
     ).values(
         'ingredients__name',
-        'ingredients__measurement_unit',
+        'ingredient__measurement_unit',
     ).annotate(
         value=Sum('amount')
     ).order_by('ingredients__name')
@@ -26,6 +26,6 @@ def get_ingredients_for_shopping(user):
         response.write(
             f'- {ingredient["ingredients__name"]} '
             f'- {ingredient["value"]} '
-            f'{ingredient["ingredients__measurement_unit"]}\n'
+            f'{ingredient["ingredient__measurement_unit"]}\n'
         )
     return response
